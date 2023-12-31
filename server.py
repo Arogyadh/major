@@ -20,6 +20,9 @@ CORS(app)
 path = './generator_1.h5'
 generator = load_model(path)
 
+# Initialize plot_path as a global variable
+plot_path = ''
+
 def normalize_images(images):
     images = np.array(images)
     normalized_images = (images / 127.5) - 1
@@ -69,10 +72,9 @@ def process_image():
     except Exception as e:
         return jsonify({'error': str(e)})
 
-# Serve the 'path_to_plot.png' file as a static file
-@app.route('/path_to_plot.png')
-def serve_plot():
-    return send_file(plot_path, mimetype='image/png')
+@app.route('/<filename>')
+def serve_plot(filename):
+    return send_file(filename, mimetype='image/png')
 
 
 if __name__ == '__main__':
