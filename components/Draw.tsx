@@ -70,7 +70,7 @@ const Draw = () => {
       if (processedImage && buttonRef.current) {
         buttonRef.current.click();
       }
-    }, 3000);
+    }, 10000);
 
     return () => clearInterval(intervalId); // Clear the interval on component unmount
   }, [processedImage]); // Depend on processedImage
