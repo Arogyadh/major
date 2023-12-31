@@ -1,7 +1,7 @@
 # See https://help.github.com/articles/ignoring-files/ for more about ignoring files.
 
 generator_1.h5
-
+path_to_plot_*.png
 # dependencies
 /node_modules
 /.pnp

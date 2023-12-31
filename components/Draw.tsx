@@ -71,12 +71,12 @@ const Draw = () => {
   const colorOptions = [
     { value: "rgb(210,180,140)", label: "Barren Land" },
     { value: "rgb(0, 191, 255)", label: "Clean Water Bodies" },
-    { value: "rgb(240, 255, 255)", label: "Cloud" },
+    { value: "rgb(220, 220, 220)", label: "Cloud" },
     { value: "rgb(135, 206, 235)", label: "Day Sky" },
     { value: "rgb(50, 205, 50)", label: "Grassland" },
     { value: "rgb(192, 192, 192)", label: "Moon" },
     { value: "rgb(25, 25, 112)", label: "Night Sky" },
-    { value: "rgb(139, 119, 101)", label: "Rocky Mountain" },
+    { value: "rgb(235, 235, 230)", label: "Rocky Mountain" },
     { value: "rgb(255, 0, 0)", label: "Volcano" },
   ];
 
@@ -116,10 +116,17 @@ const Draw = () => {
   };
 
   return (
-    <div className="flex flex-col h-full w-full overflow-hidden">
-      <div className="flex flex-row w-full items-center  justify-start mx-[50px] gap-x-10 my-[10px]  text-[10px] ">
-        <div className=" flex">
-          <label>Stroke Color:</label>
+    <div className="flex flex-col h-full w-full overflow-hidden font-semibold">
+      <div className="flex flex-row w-full items-center  justify-start mx-[50px] gap-x-12 my-[10px]  text-[10px] ">
+        <div className="flex flex-row items-center">
+          <Image
+            src="/color.png"
+            alt="color picker"
+            width={20}
+            height={20}
+            className="mr-2"
+          />
+          <label className="flex">Stroke Color:</label>
           <select
             value={strokeColor}
             onChange={(e) => handleStrokeColorChange(e.target.value)}
@@ -135,7 +142,14 @@ const Draw = () => {
             ))}
           </select>
         </div>
-        <div className="flex">
+        <div className="flex items-center">
+          <Image
+            src="/brush.png"
+            alt="brush stroke"
+            width={20}
+            height={20}
+            className="mr-2"
+          />
           <label>Stroke Width:</label>
           <select
             value={strokeWidth}
@@ -150,21 +164,50 @@ const Draw = () => {
         </div>
 
         <button
-          className="flex"
+          className="flex items-center"
           onClick={() => setEraseMode((prevEraseMode) => !prevEraseMode)}
         >
-          Toggle Eraser
+          <Image
+            src="/eraser.png"
+            alt="eraser"
+            width={20}
+            height={20}
+            className="mr-2"
+          />
+          {eraseMode && (
+            <div className="border bg-green-500 w-2 h-2 rounded-full ml-1" />
+          )}
         </button>
+
         <button className="flex" onClick={handleResetCanvas}>
           Reset Canvas
         </button>
-        <button className="flex" onClick={handleUndo}>
-          Undo
+        <button className="flex items-center" onClick={handleUndo}>
+          <Image
+            src="/undo.png"
+            alt="undo"
+            width={20}
+            height={20}
+            className="mr-2"
+          />
         </button>
-        <button className="flex" onClick={handleRedo}>
-          Redo
+        <button className="flex items-center" onClick={handleRedo}>
+          <Image
+            src="/redo.png"
+            alt="redo"
+            width={20}
+            height={20}
+            className="mr-2"
+          />
         </button>
-        <button className="flex" onClick={handleExportImage}>
+        <button className="flex items-center" onClick={handleExportImage}>
+          <Image
+            src="/send.png"
+            alt="send image"
+            width={20}
+            height={20}
+            className="mr-2"
+          />
           Get Image
         </button>
       </div>
