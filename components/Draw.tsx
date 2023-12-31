@@ -1,6 +1,6 @@
 "use client";
 import Image from "next/image";
-import React, { useRef, useState } from "react";
+import React, { useRef, useState, useEffect } from "react";
 import { ReactSketchCanvas, ReactSketchCanvasRef } from "react-sketch-canvas";
 
 const Draw = () => {
@@ -10,6 +10,7 @@ const Draw = () => {
   const [strokeWidth, setStrokeWidth] = useState(5);
   const [eraseMode, setEraseMode] = useState(false);
   const [eraserWidth, setEraserWidth] = useState(5);
+  const buttonRef = useRef<HTMLButtonElement | null>(null);
 
   //handle export image to backend
   const handleExportImage = async () => {
@@ -62,6 +63,17 @@ const Draw = () => {
       console.error("Error:", error);
     }
   };
+
+  useEffect(() => {
+    const intervalId = setInterval(() => {
+      // Trigger the button click programmatically only if the user has started making the drawing
+      if (processedImage && buttonRef.current) {
+        buttonRef.current.click();
+      }
+    }, 3000);
+
+    return () => clearInterval(intervalId); // Clear the interval on component unmount
+  }, [processedImage]); // Depend on processedImage
 
   //handle strokeColor
   const handleStrokeColorChange = (color: string) => {
@@ -200,7 +212,11 @@ const Draw = () => {
             className="mr-2"
           />
         </button>
-        <button className="flex items-center" onClick={handleExportImage}>
+        <button
+          className="flex items-center"
+          ref={buttonRef}
+          onClick={handleExportImage}
+        >
           <Image
             src="/send.png"
             alt="send image"
