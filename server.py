@@ -3,6 +3,8 @@ from PIL import Image
 from flask_cors import CORS
 import io
 import base64
+import time
+
 
 import numpy as np
 from tensorflow.keras.models import load_model
@@ -57,7 +59,8 @@ def process_image():
         
 
         # Save the plot as an image file
-        plot_path = 'path_to_plot.png'
+        timestamp = int(time.time())
+        plot_path = f'path_to_plot_{timestamp}.png'
         plt.savefig(plot_path)
         plt.close()
 
@@ -69,7 +72,7 @@ def process_image():
 # Serve the 'path_to_plot.png' file as a static file
 @app.route('/path_to_plot.png')
 def serve_plot():
-    return send_file('path_to_plot.png', mimetype='image/png')
+    return send_file(plot_path, mimetype='image/png')
 
 
 if __name__ == '__main__':

@@ -53,7 +53,7 @@ const Draw = () => {
 
       // Handle the response from the server
       const result = await response.json();
-      console.log("Result:", result);
+      console.log("Server Resonse:", result);
       console.log("Processed Image:", result.processedImage);
 
       // Set the processed image in the state
@@ -78,6 +78,16 @@ const Draw = () => {
     { value: "rgb(25, 25, 112)", label: "Night Sky" },
     { value: "rgb(139, 119, 101)", label: "Rocky Mountain" },
     { value: "rgb(255, 0, 0)", label: "Volcano" },
+  ];
+
+  const strokeOptions = [
+    { value: "5", label: "5" },
+    { value: "10", label: "10" },
+    { value: "15", label: "15" },
+    { value: "20", label: "20" },
+    { value: "25", label: "25" },
+    { value: "50", label: "50" },
+    { value: "100", label: "100" },
   ];
   //handle stroke width
   const handleStrokeWidthChange = (width: string) => {
@@ -127,11 +137,16 @@ const Draw = () => {
         </div>
         <div className="flex">
           <label>Stroke Width:</label>
-          <input
-            className="w-[20px]"
+          <select
             value={strokeWidth}
             onChange={(e) => handleStrokeWidthChange(e.target.value)}
-          ></input>
+          >
+            {strokeOptions.map(({ value, label }) => (
+              <option key={value} value={value}>
+                {label}
+              </option>
+            ))}
+          </select>
         </div>
 
         <button
@@ -163,19 +178,22 @@ const Draw = () => {
             strokeWidth={eraseMode ? eraserWidth : strokeWidth} // Use eraserWidth when in erase mode
           />
         </div>
-        <div className="flex w-1/2">
+        <div className="flex w-1/2 h-full">
+          {/* Display processed image */}
           {processedImage && (
             <Image
-              src={`http://127.0.0.1:5000/path_to_plot.png`}
+              src={`http://127.0.0.1:5000/${processedImage}`}
               alt="Processed Image"
               width={500}
               height={500}
               className="object-cover w-full h-full"
             />
           )}
-          {/* Display processed image */}
+
           {!processedImage && (
-            <p>Please draw something on the canvas to get the image.</p>
+            <p className="font-semibold px-2 h-full w-full items-center flex  ">
+              Please draw something on the canvas to get the image.
+            </p>
           )}
         </div>
       </div>
