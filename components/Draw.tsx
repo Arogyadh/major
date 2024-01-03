@@ -140,6 +140,7 @@ const Draw = () => {
           />
           <label className="flex">Stroke Color:</label>
           <select
+            className="p-1 ml-1 rounded-full cursor-pointer"
             value={strokeColor}
             onChange={(e) => handleStrokeColorChange(e.target.value)}
           >
@@ -148,6 +149,7 @@ const Draw = () => {
                 key={value}
                 value={value}
                 style={{ backgroundColor: value }}
+                className="text-xl"
               >
                 {label}
               </option>
@@ -164,6 +166,7 @@ const Draw = () => {
           />
           <label>Stroke Width:</label>
           <select
+            className="p-1 ml-1 rounded-full cursor-pointer"
             value={strokeWidth}
             onChange={(e) => handleStrokeWidthChange(e.target.value)}
           >
