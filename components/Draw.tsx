@@ -1,6 +1,7 @@
 "use client";
 import Image from "next/image";
 import React, { useRef, useState, useEffect } from "react";
+import { toast } from "react-hot-toast";
 import { ReactSketchCanvas, ReactSketchCanvasRef } from "react-sketch-canvas";
 
 const Draw = () => {
@@ -37,6 +38,9 @@ const Draw = () => {
 
   //handle export image to backend
   const handleExportImage = async () => {
+    // const handleExportImagePromise =new Promise((resolve, reject) => {
+
+    // })
     try {
       const imageData = await canvas.current?.exportImage("png");
       const canvasPaths = await canvas.current?.exportPaths();
@@ -83,6 +87,7 @@ const Draw = () => {
       // Set the processed image in the state
       setProcessedImage(result.processedImage);
       setSuperRS(false);
+      toast.success("Image processed successfully!");
       console.log(result.processedImage);
     } catch (error) {
       console.error("Error:", error);
@@ -324,9 +329,9 @@ const Draw = () => {
                   <Image
                     src={`http://127.0.0.1:5000/${processedImage}`}
                     alt="Processed Image"
-                    width={500}
-                    height={500}
-                    className="object-cover w-full h-full"
+                    width={256}
+                    height={256}
+                    className="object-contain w-full h-full"
                   />
                 )}
                 {!processedImage && (
@@ -345,7 +350,7 @@ const Draw = () => {
                   alt="img"
                   height={500}
                   width={500}
-                  className="object-cover w-full h-full "
+                  className="object-contain w-full h-full "
                   style={{
                     filter: `grayscale(${grayscaleValue}) brightness(${brightnessValue}%) contrast(${contrastValue}%) saturate(${saturationValue}%) `,
                   }}
