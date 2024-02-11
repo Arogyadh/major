@@ -2,6 +2,7 @@
 import Image from "next/image";
 import React, { useRef, useState, useEffect } from "react";
 import { toast } from "react-hot-toast";
+
 import { ReactSketchCanvas, ReactSketchCanvasRef } from "react-sketch-canvas";
 
 const Draw = () => {
