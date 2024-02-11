@@ -17,8 +17,8 @@ const Draw = () => {
 
   // Filters
   const [grayscaleValue, setGrayscaleValue] = useState(0);
-  const [brightnessValue, setBrightnessValue] = useState(100);
-  const [contrastValue, setContrastValue] = useState(100);
+  const [brightnessValue, setBrightnessValue] = useState(120);
+  const [contrastValue, setContrastValue] = useState(120);
   const [saturationValue, setSaturationValue] = useState(100);
 
   const handleBrightnessChange = (event: any) => {
@@ -37,18 +37,15 @@ const Draw = () => {
   };
 
   //handle export image to backend
-  const handleExportImage = async () => {
-    // const handleExportImagePromise =new Promise((resolve, reject) => {
 
-    // })
-    try {
+  async function handleExportImage() {
+    const handlePromise = new Promise(async (resolve, reject) => {
       const imageData = await canvas.current?.exportImage("png");
       const canvasPaths = await canvas.current?.exportPaths();
 
       if (!canvasPaths || !imageData) {
         throw new Error("Failed to export canvas paths or image data");
       }
-
       // Extract unique strokeColor values from canvasPaths
       const uniqueStrokeColors = [
         ...new Set(canvasPaths.map((path) => path.strokeColor)),
@@ -75,43 +72,57 @@ const Draw = () => {
         body: JSON.stringify(data),
       });
 
-      if (!response.ok) {
-        throw new Error("Failed to process image on the server");
+      if (response.ok) {
+        // Handle the response from the server
+        const result = await response.json();
+        console.log("Server Resonse:", result);
+        console.log("Processed Image:", result.processedImage);
+
+        // Set the processed image in the state
+        setProcessedImage(result.processedImage);
+        setSuperRS(false);
+        console.log(result.processedImage);
+        resolve(result);
+      } else {
+        reject();
       }
-
-      // Handle the response from the server
-      const result = await response.json();
-      // console.log("Server Resonse:", result);
-      // console.log("Processed Image:", result.processedImage);
-
-      // Set the processed image in the state
-      setProcessedImage(result.processedImage);
-      setSuperRS(false);
-      toast.success("Image processed successfully!");
-      console.log(result.processedImage);
-    } catch (error) {
-      console.error("Error:", error);
-    }
-  };
+    });
+    await toast.promise(handlePromise, {
+      loading: "Generating...",
+      success: "Generated Image.",
+      error: <b>Could not generate.</b>,
+    });
+  }
   const handleSR = async () => {
     try {
-      // Make a POST request to trigger the super-resolution model
-      const response = await fetch("http://127.0.0.1:5000/SR", {
-        method: "POST",
+      const handlePromise = new Promise(async (resolve, reject) => {
+        // Make a POST request to trigger the super-resolution model
+        const response = await fetch("http://127.0.0.1:5000/SR", {
+          method: "POST",
+        });
+
+        if (response.ok) {
+          // Handle the response from the server
+          const result = await response.json();
+          console.log("Server Resonse:", result);
+          console.log("Processed Image:", result.processedImage);
+
+          // Set the processed image in the state
+          setProcessedImage(result.processedImage);
+          setSuperRS(true);
+          console.log(result.processedImage);
+          resolve(result);
+        } else {
+          console.error("Error fetching image:", response.status);
+          reject();
+        }
       });
 
-      if (response.ok) {
-        // If the request is successful, get the processed image path from the response
-        const data = await response.json();
-        const image = data?.processedImage;
-        console.log(image);
-
-        // Set the processed image path in your component state or variable
-        setProcessedImage(image);
-        setSuperRS(true);
-      } else {
-        console.error("Error fetching image:", response.status);
-      }
+      await toast.promise(handlePromise, {
+        loading: "Super-Resolution in progress...",
+        success: "Super-Resolution completed.",
+        error: <b>Error fetching image.</b>,
+      });
     } catch (error) {
       console.error("Error:", error);
     }
@@ -327,10 +338,11 @@ const Draw = () => {
               <div className="w-full h-full">
                 {processedImage && (
                   <Image
+                    key={processedImage}
                     src={`http://127.0.0.1:5000/${processedImage}`}
-                    alt="Processed Image"
-                    width={256}
-                    height={256}
+                    alt={processedImage}
+                    width={1024}
+                    height={1024}
                     className="object-contain w-full h-full"
                   />
                 )}
@@ -345,16 +357,19 @@ const Draw = () => {
           {edit && (
             <>
               <div className="w-full h-[70%]">
-                <Image
-                  src={`http://127.0.0.1:5000/${processedImage}`}
-                  alt="img"
-                  height={500}
-                  width={500}
-                  className="object-contain w-full h-full "
-                  style={{
-                    filter: `grayscale(${grayscaleValue}) brightness(${brightnessValue}%) contrast(${contrastValue}%) saturate(${saturationValue}%) `,
-                  }}
-                />
+                {processedImage && (
+                  <Image
+                    key={processedImage}
+                    src={`http://127.0.0.1:5000/${processedImage}`}
+                    alt={processedImage}
+                    height={1024}
+                    width={1024}
+                    className="object-contain w-full h-full "
+                    style={{
+                      filter: `grayscale(${grayscaleValue}) brightness(${brightnessValue}%) contrast(${contrastValue}%) saturate(${saturationValue}%) `,
+                    }}
+                  />
+                )}
               </div>
               {/* Edit Section */}
 

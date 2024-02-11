@@ -76,8 +76,15 @@ def process_image():
         # Predict using the model
         result = generator.predict(img_array_batch)
 
+
+
+    de_normalized_image = (generated_image + 1) * 127.5
+    generated = adjust_contrast_brightness(de_normalized_image, alpha=1.2, beta=15)
+
         # Assuming images are normalized to [-1, 1]
         processed_image = (result[0] * 0.5 + 0.5)
+
+
 
         # Convert NumPy array to PIL Image
         processed_image_pil = Image.fromarray((processed_image * 255).astype(np.uint8))
@@ -183,7 +190,12 @@ def super_resolution():
             output = model(img_LR).data.squeeze().float().cpu().clamp_(0, 1).numpy()
         output = np.transpose(output[[2, 1, 0], :, :], (1, 2, 0))
         output = (output * 255.0).round()
-        output_path = f'./SR/SR_{base}.png'
+        import time
+
+        # Generate current timestamp
+        timestamp = int(time.time())
+        # Append timestamp to output_path
+        output_path = f'./SR/SR_{base}_{timestamp}.png'
 
         cv2.imwrite(output_path, output)
 
