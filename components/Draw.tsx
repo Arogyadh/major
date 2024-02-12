@@ -8,6 +8,9 @@ import LightModeIcon from "@mui/icons-material/LightMode";
 import AcUnitTwoToneIcon from "@mui/icons-material/AcUnitTwoTone";
 import RestartAltTwoToneIcon from "@mui/icons-material/RestartAltTwoTone";
 import { ReactSketchCanvas, ReactSketchCanvasRef } from "react-sketch-canvas";
+import InvertColorsIcon from "@mui/icons-material/InvertColors";
+import BlurOnIcon from "@mui/icons-material/BlurOn";
+import HMobiledataIcon from "@mui/icons-material/HMobiledata";
 
 const Draw = () => {
   const canvas = useRef<ReactSketchCanvasRef>(null);
@@ -26,31 +29,47 @@ const Draw = () => {
   const [brightnessValue, setBrightnessValue] = useState(120);
   const [contrastValue, setContrastValue] = useState(120);
   const [saturationValue, setSaturationValue] = useState(100);
+  const [hueRotateValue, setHueRotateValue] = useState(0);
+  const [invertValue, setInvertValue] = useState(0);
+  const [blurValue, setBlurValue] = useState(0);
+  const [sepiaValue, setSepiaValue] = useState(0);
 
   const resetFilters = () => {
     setBrightnessValue(120);
     setContrastValue(120);
     setSaturationValue(120);
     setGrayscaleValue(0);
+    setHueRotateValue(0);
+    setInvertValue(0);
+    setBlurValue(0);
+    setSepiaValue(0);
   };
 
   const handleBrightnessChange = (event: any) => {
     setBrightnessValue(event.target.value);
-    console.log(brightnessValue);
   };
 
   const handleContrastChange = (event: any) => {
     setContrastValue(event.target.value);
-    console.log(contrastValue);
   };
   const handleGrayscaleChange = (event: any) => {
     setGrayscaleValue(event.target.value);
-    console.log(grayscaleValue);
   };
   const handleSaturationChange = (event: any) => {
     const value = parseFloat(event.target.value);
     setSaturationValue(value);
-    console.log(saturationValue);
+  };
+  const handleHueRotateChange = (event: any) => {
+    setHueRotateValue(event.target.value);
+  };
+  const handleSepiaChange = (event: any) => {
+    setSepiaValue(event.target.value);
+  };
+  const handleInvertChange = (event: any) => {
+    setInvertValue(event.target.value);
+  };
+  const handleBlurChange = (event: any) => {
+    setBlurValue(event.target.value);
   };
 
   //handle export image to backend
@@ -428,6 +447,83 @@ const Draw = () => {
                     onChange={handleSaturationChange}
                   />
                 </div>
+                <div className="flex flex-col">
+                  <label className=" text-[10px] text-gray-700 mr-2">
+                    <HMobiledataIcon fontSize="small" />
+                    Hue
+                    {
+                      <span className="text-[10px] text-gray-500 ml-1">
+                        ({hueRotateValue})
+                      </span>
+                    }
+                  </label>
+                  <input
+                    className=" max-w-[80px]"
+                    type="range"
+                    min="0"
+                    max="180"
+                    value={hueRotateValue}
+                    onChange={handleHueRotateChange}
+                  />
+                </div>
+                <div className="flex flex-col">
+                  <label className=" text-[10px] text-gray-700 mr-2">
+                    <AcUnitTwoToneIcon fontSize="small" />
+                    Sepia
+                    {
+                      <span className="text-[10px] text-gray-500 ml-1">
+                        ({sepiaValue})
+                      </span>
+                    }
+                  </label>
+                  <input
+                    className=" max-w-[80px]"
+                    type="range"
+                    min="0"
+                    max="100"
+                    value={sepiaValue}
+                    onChange={handleSepiaChange}
+                  />
+                </div>
+                <div className="flex flex-col">
+                  <label className=" text-[10px] text-gray-700 mr-2">
+                    <BlurOnIcon fontSize="small" />
+                    Blur
+                    {
+                      <span className="text-[10px] text-gray-500 ml-1">
+                        ({blurValue})
+                      </span>
+                    }
+                  </label>
+                  <input
+                    className=" max-w-[80px]"
+                    type="range"
+                    min="0"
+                    max="64"
+                    value={blurValue}
+                    onChange={handleBlurChange}
+                  />
+                </div>
+                <div className="flex flex-col">
+                  <label className=" text-[10px] text-gray-700 mr-2">
+                    <InvertColorsIcon fontSize="small" />
+                    Invert
+                    {
+                      <span className="text-[10px] text-gray-500 ml-1">
+                        ({invertValue})
+                      </span>
+                    }
+                  </label>
+                  <input
+                    className=" max-w-[80px]"
+                    type="range"
+                    min="0"
+                    max="100"
+                    step="100"
+                    value={invertValue}
+                    onChange={handleInvertChange}
+                  />
+                </div>
                 <button
                   className="flex items-center"
                   onClick={() => {
@@ -483,7 +579,15 @@ const Draw = () => {
                   width={1024}
                   className="object-contain w-full h-full "
                   style={{
-                    filter: `grayscale(${grayscaleValue}) brightness(${brightnessValue}%) contrast(${contrastValue}%) saturate(${saturationValue}%) `,
+                    filter: `
+                    grayscale(${grayscaleValue}) 
+                    brightness(${brightnessValue}%) 
+                    contrast(${contrastValue}%) 
+                    saturate(${saturationValue}%)
+                    hue-rotate(${hueRotateValue}deg)
+                    invert(${invertValue}%)
+                    blur(${blurValue}px)
+                    sepia(${sepiaValue}%) `,
                   }}
                 />
               )}
