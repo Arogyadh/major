@@ -8,12 +8,13 @@ import { ReactSketchCanvas, ReactSketchCanvasRef } from "react-sketch-canvas";
 const Draw = () => {
   const canvas = useRef<ReactSketchCanvasRef>(null);
   const [processedImage, setProcessedImage] = useState<string | null>(null);
-  const [strokeColor, setStrokeColor] = useState("rgb(210,180,140)");
+  const [strokeColor, setStrokeColor] = useState<any>("rgb(210,180,140)");
   const [strokeWidth, setStrokeWidth] = useState(5);
   const [eraseMode, setEraseMode] = useState(false);
   const [eraserWidth, setEraserWidth] = useState(5);
   const [edit, setEdit] = useState(false);
   const [superRS, setSuperRS] = useState(false);
+  const [fullScreen, setFullScreen] = useState(false);
   const buttonRef = useRef<HTMLButtonElement | null>(null);
 
   // Filters
@@ -22,19 +23,30 @@ const Draw = () => {
   const [contrastValue, setContrastValue] = useState(120);
   const [saturationValue, setSaturationValue] = useState(100);
 
+  const resetFilters = () => {
+    setBrightnessValue(120);
+    setContrastValue(120);
+    setSaturationValue(120);
+    setGrayscaleValue(0);
+  };
+
   const handleBrightnessChange = (event: any) => {
     setBrightnessValue(event.target.value);
+    console.log(brightnessValue);
   };
 
   const handleContrastChange = (event: any) => {
     setContrastValue(event.target.value);
+    console.log(contrastValue);
   };
   const handleGrayscaleChange = (event: any) => {
     setGrayscaleValue(event.target.value);
+    console.log(grayscaleValue);
   };
   const handleSaturationChange = (event: any) => {
     const value = parseFloat(event.target.value);
     setSaturationValue(value);
+    console.log(saturationValue);
   };
 
   //handle export image to backend
@@ -201,237 +213,286 @@ const Draw = () => {
   };
 
   return (
-    <div className="flex flex-col h-full w-full overflow-hidden font-semibold bg-gray-300">
-      <div className=" flex flex-row w-full items-center  justify-start mx-[50px] gap-x-12 my-[10px]  text-[10px] ">
-        <div className="flex flex-row items-center">
-          <Image
-            src="/color.png"
-            alt="color picker"
-            width={20}
-            height={20}
-            className="mr-2"
-          />
-          <label className="flex">Stroke Color:</label>
-          <select
-            className="p-1 ml-1 rounded-full cursor-pointer"
-            value={strokeColor}
-            onChange={(e) => handleStrokeColorChange(e.target.value)}
-          >
-            {colorOptions.map(({ value, label }) => (
-              <option
-                key={value}
-                value={value}
-                style={{ backgroundColor: value }}
-                className="text-xl"
-              >
-                {label}
-              </option>
-            ))}
-          </select>
-        </div>
-        <div className="flex items-center">
-          <Image
-            src="/brush.png"
-            alt="brush stroke"
-            width={20}
-            height={20}
-            className="mr-2"
-          />
-          <label>Stroke Width:</label>
-          <input
-            type="button"
-            value={strokeWidth}
-            disabled
-            className="font-bold ml-2 text-lg"
-          />
-        </div>
-
-        <button
-          className="flex items-center"
-          onClick={() => setEraseMode((prevEraseMode) => !prevEraseMode)}
-        >
-          <Image
-            src="/eraser.png"
-            alt="eraser"
-            width={20}
-            height={20}
-            className="mr-2"
-          />
-          {eraseMode && (
-            <div className="border bg-green-500 w-2 h-2 rounded-full ml-1" />
-          )}
-        </button>
-
-        <button className="flex" onClick={handleResetCanvas}>
-          Reset Canvas
-        </button>
-        <button className="flex items-center" onClick={handleUndo}>
-          <Image
-            src="/undo.png"
-            alt="undo"
-            width={20}
-            height={20}
-            className="mr-2"
-          />
-        </button>
-        <button className="flex items-center" onClick={handleRedo}>
-          <Image
-            src="/redo.png"
-            alt="redo"
-            width={20}
-            height={20}
-            className="mr-2"
-          />
-        </button>
-        <button
-          className="flex items-center"
-          ref={buttonRef}
-          onClick={handleExportImage}
-        >
-          <Image
-            src="/send.png"
-            alt="send image"
-            width={20}
-            height={20}
-            className="mr-2"
-          />
-          Get Image
-        </button>
-        <button className="flex items-center" onClick={() => setEdit(!edit)}>
-          <Image
-            src="/send.png"
-            alt="send image"
-            width={20}
-            height={20}
-            className="mr-2"
-          />
-          Edit
-          {edit && (
-            <div className="border bg-green-500 w-2 h-2 rounded-full ml-1" />
-          )}
-        </button>
-        <button
-          type="button"
-          onClick={handleSR}
-          className={`p-2 border rounded-lg ${
-            superRS ? "border-green-500" : "border-red-500"
-          }`}
-        >
-          SR
-        </button>
-      </div>
-
-      <div className="flex flex-row w-full h-full">
-        <div className="w-1/2 h-[95vh]">
-          <ReactSketchCanvas
-            ref={canvas}
-            height="100%"
-            width="100%"
-            strokeColor={eraseMode ? "rgb(255,255,255)" : strokeColor} // Set transparent color for eraser
-            strokeWidth={eraseMode ? eraserWidth : strokeWidth} // Use eraserWidth when in erase mode
-          />
-        </div>
-
-        <div className=" w-1/2 h-[95vh] border border-gray-500">
+    <>
+      <div className="flex flex-col h-full w-full overflow-hidden font-semibold bg-gray-300">
+        <div className=" flex flex-row w-full items-center  justify-start mx-[50px] gap-x-12 my-[10px]  text-[10px] ">
           {!edit && (
             <>
-              {/* Display processed image */}
-              <div className="w-full h-full">
-                {processedImage && (
-                  <Image
-                    key={processedImage}
-                    src={`http://127.0.0.1:5000/${processedImage}`}
-                    alt={processedImage}
-                    width={1024}
-                    height={1024}
-                    className="object-contain w-full h-full"
-                  />
-                )}
-                {!processedImage && (
-                  <div className="font-semibold py-[40%] px-[15%]">
-                    Please draw something on the canvas to get the image.
-                  </div>
-                )}
+              <div className="flex flex-row items-center">
+                <Image
+                  src="/color.png"
+                  alt="color picker"
+                  width={20}
+                  height={20}
+                  className="mr-2"
+                />
+                <label className="flex">Stroke Color:</label>
+                <select
+                  className="p-1 ml-1 rounded-full cursor-pointer"
+                  value={strokeColor}
+                  onChange={(e) => handleStrokeColorChange(e.target.value)}
+                >
+                  {colorOptions.map(({ value, label }) => (
+                    <option
+                      key={value}
+                      value={value}
+                      style={{ backgroundColor: value }}
+                      className="text-xl"
+                    >
+                      {label}
+                    </option>
+                  ))}
+                </select>
               </div>
+              <div className="flex items-center">
+                <Image
+                  src="/brush.png"
+                  alt="brush stroke"
+                  width={20}
+                  height={20}
+                  className="mr-2"
+                />
+                <label>Stroke Width:</label>
+                <input
+                  type="button"
+                  value={strokeWidth}
+                  disabled
+                  className="font-bold ml-2 text-lg"
+                />
+              </div>
+
+              <button
+                className="flex items-center"
+                onClick={() => setEraseMode((prevEraseMode) => !prevEraseMode)}
+              >
+                <Image
+                  src="/eraser.png"
+                  alt="eraser"
+                  width={20}
+                  height={20}
+                  className="mr-2"
+                />
+                {eraseMode && (
+                  <div className="border bg-green-500 w-2 h-2 rounded-full ml-1" />
+                )}
+              </button>
+
+              <button className="flex" onClick={handleResetCanvas}>
+                Reset Canvas
+              </button>
+              <button className="flex items-center" onClick={handleUndo}>
+                <Image
+                  src="/undo.png"
+                  alt="undo"
+                  width={20}
+                  height={20}
+                  className="mr-2"
+                />
+              </button>
+              <button className="flex items-center" onClick={handleRedo}>
+                <Image
+                  src="/redo.png"
+                  alt="redo"
+                  width={20}
+                  height={20}
+                  className="mr-2"
+                />
+              </button>
+              <button
+                className="flex items-center"
+                ref={buttonRef}
+                onClick={handleExportImage}
+              >
+                <Image
+                  src="/send.png"
+                  alt="send image"
+                  width={20}
+                  height={20}
+                  className="mr-2"
+                />
+                Get Image
+              </button>
+              <button
+                className="flex items-center"
+                onClick={() => {
+                  setEdit(!edit);
+                  setStrokeColor(null);
+                }}
+              >
+                <Image
+                  src="/send.png"
+                  alt="send image"
+                  width={20}
+                  height={20}
+                  className="mr-2"
+                />
+                Edit
+                {edit && (
+                  <div className="border bg-green-500 w-2 h-2 rounded-full ml-1" />
+                )}
+              </button>
+              <button
+                type="button"
+                onClick={handleSR}
+                className={`p-2 border rounded-lg ${
+                  superRS ? "border-green-500" : "border-red-500"
+                }`}
+              >
+                SR
+              </button>
+              <button
+                type="button"
+                onClick={() => {
+                  setFS(!fs);
+                }}
+              >
+                FS
+              </button>
             </>
           )}
+          {/* Edit mode on */}
           {edit && (
             <>
-              <div className="w-full h-[70%]">
-                {processedImage && (
-                  <Image
-                    key={processedImage}
-                    src={`http://127.0.0.1:5000/${processedImage}`}
-                    alt={processedImage}
-                    height={1024}
-                    width={1024}
-                    className="object-contain w-full h-full "
-                    style={{
-                      filter: `grayscale(${grayscaleValue}) brightness(${brightnessValue}%) contrast(${contrastValue}%) saturate(${saturationValue}%) `,
-                    }}
+              <div className="flex gap-8">
+                <div className="flex flex-col">
+                  <label className=" text-xs text-gray-700 mr-2">
+                    GrayScale
+                    {
+                      <span className="text-xs text-gray-500 ml-1">
+                        ({grayscaleValue})
+                      </span>
+                    }
+                  </label>
+                  <input
+                    className=" max-w-[80px] "
+                    type="range"
+                    min="0"
+                    max="1"
+                    step="0.01"
+                    value={grayscaleValue}
+                    onChange={handleGrayscaleChange}
                   />
-                )}
-              </div>
-              {/* Edit Section */}
-
-              <div className="grid grid-cols-3">
-                <div className="flex flex-col gap-1">
-                  <div>
-                    <label className=" text-sm text-gray-700 mr-2">
-                      GrayScale
-                    </label>
-                    <input
-                      type="range"
-                      min="0"
-                      max="1"
-                      step="0.01"
-                      value={grayscaleValue}
-                      onChange={handleGrayscaleChange}
-                    />
-                  </div>
-                  <div>
-                    <label className=" text-sm text-gray-700 mr-2">
-                      Brightness
-                    </label>
-                    <input
-                      type="range"
-                      min="0"
-                      max="200"
-                      value={brightnessValue}
-                      onChange={handleBrightnessChange}
-                    />
-                  </div>
-                  <div>
-                    <label className=" text-sm text-gray-700 mr-2">
-                      Contrast
-                    </label>
-                    <input
-                      type="range"
-                      min="0"
-                      max="200"
-                      value={contrastValue}
-                      onChange={handleContrastChange}
-                    />
-                  </div>
-                  <div>
-                    <label className=" text-sm text-gray-700 mr-2">
-                      Saturation
-                    </label>
-                    <input
-                      type="range"
-                      min="0"
-                      max="200"
-                      value={saturationValue}
-                      onChange={handleSaturationChange}
-                    />
-                  </div>
                 </div>
+                <div className="flex flex-col">
+                  <label className=" text-xs text-gray-700 mr-2">
+                    Brightness
+                    {
+                      <span className="text-xs text-gray-500 ml-1">
+                        ({brightnessValue})
+                      </span>
+                    }
+                  </label>
+                  <input
+                    className=" max-w-[80px]"
+                    type="range"
+                    min="0"
+                    max="200"
+                    value={brightnessValue}
+                    onChange={handleBrightnessChange}
+                  />
+                </div>
+                <div className="flex flex-col">
+                  <label className=" text-xs text-gray-700 mr-2">
+                    Contrast
+                    {
+                      <span className="text-xs text-gray-500 ml-1">
+                        ({contrastValue})
+                      </span>
+                    }
+                  </label>
+                  <input
+                    className=" max-w-[80px]"
+                    type="range"
+                    min="0"
+                    max="200"
+                    value={contrastValue}
+                    onChange={handleContrastChange}
+                  />
+                </div>
+                <div className="flex flex-col">
+                  <label className=" text-xs text-gray-700 mr-2">
+                    Saturation
+                    {
+                      <span className="text-xs text-gray-500 ml-1">
+                        ({saturationValue})
+                      </span>
+                    }
+                  </label>
+                  <input
+                    className=" max-w-[80px]"
+                    type="range"
+                    min="0"
+                    max="200"
+                    value={saturationValue}
+                    onChange={handleSaturationChange}
+                  />
+                </div>
+                <button
+                  className="flex items-center"
+                  onClick={() => {
+                    setEdit(!edit);
+                  }}
+                >
+                  <Image
+                    src="/send.png"
+                    alt="send image"
+                    width={20}
+                    height={20}
+                    className="mr-2"
+                  />
+                  Edit
+                  {edit && (
+                    <div className="border bg-green-500 w-2 h-2 rounded-full ml-1" />
+                  )}
+                </button>
+                <button type="button" onClick={resetFilters}>
+                  Reset
+                </button>
               </div>
             </>
           )}
         </div>
+
+        <div className="flex flex-row w-full h-full">
+          <div className="w-1/2 h-[95vh]">
+            <ReactSketchCanvas
+              ref={canvas}
+              height="100%"
+              width="100%"
+              strokeColor={eraseMode ? "rgb(255,255,255)" : strokeColor} // Set transparent color for eraser
+              strokeWidth={eraseMode ? eraserWidth : strokeWidth} // Use eraserWidth when in erase mode
+            />
+          </div>
+
+          <div className=" w-1/2 h-[95vh] border border-gray-500">
+            <div className="w-full h-full">
+              {processedImage && (
+                <Image
+                  key={processedImage}
+                  src={`http://127.0.0.1:5000/${processedImage}`}
+                  alt={processedImage}
+                  height={1024}
+                  width={1024}
+                  className="object-contain w-full h-full "
+                  style={{
+                    filter: `grayscale(${grayscaleValue}) brightness(${brightnessValue}%) contrast(${contrastValue}%) saturate(${saturationValue}%) `,
+                  }}
+                />
+              )}
+              {!processedImage && (
+                <div className="font-semibold py-[40%] px-[15%]">
+                  Please draw something on the canvas to get the image.
+                </div>
+              )}
+            </div>
+
+            <div className="grid grid-cols-3">
+              <div className="flex flex-col gap-1"></div>
+            </div>
+          </div>
+        </div>
       </div>
-    </div>
+    </>
   );
 };
 

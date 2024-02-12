@@ -76,11 +76,6 @@ def process_image():
         # Predict using the model
         result = generator.predict(img_array_batch)
 
-
-
-    de_normalized_image = (generated_image + 1) * 127.5
-    generated = adjust_contrast_brightness(de_normalized_image, alpha=1.2, beta=15)
-
         # Assuming images are normalized to [-1, 1]
         processed_image = (result[0] * 0.5 + 0.5)
 
