@@ -2,7 +2,11 @@
 import Image from "next/image";
 import React, { useRef, useState, useEffect } from "react";
 import { toast } from "react-hot-toast";
-
+import ContrastOutlinedIcon from "@mui/icons-material/ContrastOutlined";
+import FilterBAndWIcon from "@mui/icons-material/FilterBAndW";
+import LightModeIcon from "@mui/icons-material/LightMode";
+import AcUnitTwoToneIcon from "@mui/icons-material/AcUnitTwoTone";
+import RestartAltTwoToneIcon from "@mui/icons-material/RestartAltTwoTone";
 import { ReactSketchCanvas, ReactSketchCanvasRef } from "react-sketch-canvas";
 
 const Draw = () => {
@@ -316,7 +320,9 @@ const Draw = () => {
                 className="flex items-center"
                 onClick={() => {
                   setEdit(!edit);
-                  setStrokeColor(null);
+                  setStrokeColor((prevColor: string | null) =>
+                    prevColor === null ? "rgb(210,180,140)" : null
+                  );
                 }}
               >
                 <Image
@@ -340,14 +346,6 @@ const Draw = () => {
               >
                 SR
               </button>
-              <button
-                type="button"
-                onClick={() => {
-                  setFS(!fs);
-                }}
-              >
-                FS
-              </button>
             </>
           )}
           {/* Edit mode on */}
@@ -355,10 +353,10 @@ const Draw = () => {
             <>
               <div className="flex gap-8">
                 <div className="flex flex-col">
-                  <label className=" text-xs text-gray-700 mr-2">
-                    GrayScale
+                  <label className=" text-[10px] text-gray-700 mr-2">
+                    <FilterBAndWIcon fontSize="small" /> Grayscale
                     {
-                      <span className="text-xs text-gray-500 ml-1">
+                      <span className="text-[10px] text-gray-500 ml-1">
                         ({grayscaleValue})
                       </span>
                     }
@@ -374,10 +372,11 @@ const Draw = () => {
                   />
                 </div>
                 <div className="flex flex-col">
-                  <label className=" text-xs text-gray-700 mr-2">
+                  <label className=" text-[10px] text-gray-700 mr-2">
+                    <LightModeIcon fontSize="small" />
                     Brightness
                     {
-                      <span className="text-xs text-gray-500 ml-1">
+                      <span className="text-[10px] text-gray-500 ml-1">
                         ({brightnessValue})
                       </span>
                     }
@@ -392,10 +391,11 @@ const Draw = () => {
                   />
                 </div>
                 <div className="flex flex-col">
-                  <label className=" text-xs text-gray-700 mr-2">
+                  <label className=" text-[10px] text-gray-700 mr-2">
+                    <ContrastOutlinedIcon fontSize="small" />
                     Contrast
                     {
-                      <span className="text-xs text-gray-500 ml-1">
+                      <span className="text-[10px] text-gray-500 ml-1">
                         ({contrastValue})
                       </span>
                     }
@@ -410,10 +410,11 @@ const Draw = () => {
                   />
                 </div>
                 <div className="flex flex-col">
-                  <label className=" text-xs text-gray-700 mr-2">
+                  <label className=" text-[10px] text-gray-700 mr-2">
+                    <AcUnitTwoToneIcon fontSize="small" />
                     Saturation
                     {
-                      <span className="text-xs text-gray-500 ml-1">
+                      <span className="text-[10px] text-gray-500 ml-1">
                         ({saturationValue})
                       </span>
                     }
@@ -431,6 +432,9 @@ const Draw = () => {
                   className="flex items-center"
                   onClick={() => {
                     setEdit(!edit);
+                    setStrokeColor((prevColor: string | null) =>
+                      prevColor === null ? "rgb(210,180,140)" : null
+                    );
                   }}
                 >
                   <Image
@@ -446,6 +450,10 @@ const Draw = () => {
                   )}
                 </button>
                 <button type="button" onClick={resetFilters}>
+                  <RestartAltTwoToneIcon
+                    className="items-center"
+                    fontSize="small"
+                  />
                   Reset
                 </button>
               </div>
