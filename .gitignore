@@ -2,8 +2,11 @@
 
 generator_1.h5
 generator.h5
+generator_3.h5
 esr_latest.pth
 generator_2.h5
+generator_4.h5
+recommendation_model.h5
 path_to_plot_*.png
 /SR/*
 /results/*

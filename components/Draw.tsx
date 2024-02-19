@@ -15,7 +15,7 @@ import HMobiledataIcon from "@mui/icons-material/HMobiledata";
 const Draw = () => {
   const canvas = useRef<ReactSketchCanvasRef>(null);
   const [processedImage, setProcessedImage] = useState<string | null>(null);
-  const [strokeColor, setStrokeColor] = useState<any>("rgb(210,180,140)");
+  const [strokeColor, setStrokeColor] = useState<any>("rgb(0,0,0)");
   const [strokeWidth, setStrokeWidth] = useState(5);
   const [eraseMode, setEraseMode] = useState(false);
   const [eraserWidth, setEraserWidth] = useState(5);
@@ -199,24 +199,24 @@ const Draw = () => {
   };
   //provide Color options to user
   const colorOptions = [
-    { value: "rgb(140,180,210)", label: "Barren Land" },
-    { value: "rgb(0, 191, 255)", label: "Clean Water Bodies" },
-    { value: "rgb(220, 220, 220)", label: "Cloud" },
-    { value: "rgb(235, 206,135 )", label: "Day Sky" },
-    { value: "rgb(50, 205, 50)", label: "Grassland" },
-    { value: "rgb(192, 192, 192)", label: "Moon" },
-    { value: "rgb(112, 25, 25)", label: "Night Sky" },
-    { value: "rgb(235, 235, 230)", label: "Rocky Mountain" },
-    { value: "rgb(0,128,0)", label: "Green Mountain" },
-    { value: "rgb(230,235,235)", label: "Snow Mountain" },
-    { value: "rgb(0, 0, 255)", label: "Volcano" },
-    { value: "rgb(34,139,34)", label: "Green Tree" },
-    { value: "rgb(128,128,128)", label: "Dead Tree" },
-    { value: "rgb(0,100,0)", label: "Green Forest" },
-    { value: "rgb(96,164,244)", label: "Desert" },
-    { value: "rgb(250,240,220)", label: "Snowland" },
-    { value: "rgb(19,69,139)", label: "Muddy Water" },
-    { value: "rgb(0,69,255)", label: "Lava" },
+    { value: "rgb(30,30,30)", label: "Barren Land" },
+    { value: "rgb(0, 10,250)", label: "Clean Water Bodies" },
+    { value: "rgb(130,0,130)", label: "Cloud" },
+    { value: "rgb(30,60,170)", label: "Day Sky" },
+    { value: "rgb(40,110,30)", label: "Grassland" },
+    { value: "rgb(230,130,0)", label: "Moon" },
+    { value: "rgb(110,20,30)", label: "Night Sky" },
+    { value: "rgb(140,50,30)", label: "Rocky Mountain" },
+    { value: "rgb(0,50,0))", label: "Green Mountain" },
+    { value: "rgb(160,100,200)", label: "Snow Mountain" },
+    { value: "rgb(250,30,30)", label: "Volcano" },
+    { value: "rgb(70,180,40)", label: "Green Tree" },
+    { value: "rgb(100,100,100)", label: "Dead Tree" },
+    { value: "rgb(0,240,0)", label: "Green Forest" },
+    { value: "rgb(170,80,50)", label: "Desert" },
+    { value: "rgb(0,150,120)", label: "Snowland" },
+    { value: "rgb(180,120,60)", label: "Muddy Water" },
+    { value: "rgb(240,50,0)", label: "Lava" },
   ];
 
   const handleResetCanvas = () => {

@@ -13,20 +13,17 @@ import torch
 import functools
 import torch.nn as nn
 import torch.nn.functional as F
-
-
 import numpy as np
 from tensorflow.keras.models import load_model
 import matplotlib
 matplotlib.use('Agg')
 import matplotlib.pyplot as plt
 
-
 app = Flask(__name__)
 CORS(app)
 
 # Load the TensorFlow model
-path = './generator_2.h5'
+path = './generator_4.h5'
 generator = load_model(path)
 
 #Load the pytorch Model
