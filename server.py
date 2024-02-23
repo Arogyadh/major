@@ -4,6 +4,7 @@ from flask_cors import CORS
 import io
 import base64
 import time
+import tensorflow as tf
 import os  
 import os.path as osp
 import glob
@@ -25,6 +26,8 @@ CORS(app)
 # Load the TensorFlow model
 path = './generator_4.h5'
 generator = load_model(path)
+path_recommendation_model = './recommendation_model.h5'
+recommendation_model=tf.keras.models.load_model(path_recommendation_model)
 
 #Load the pytorch Model
 
@@ -54,8 +57,87 @@ def process_image():
         # Get the image data from the request
         data = request.get_json()
         image_data_url = data['image']['dataUrl']
-        stroke_colors = data['strokeColors']
-        print(stroke_colors)
+        rgb_values = data['strokeColors']
+        
+        rgb_to_label = {
+        "rgb(30,30,30)": "Barren Land",
+        "rgb(0,10,250)": "Clean Water Bodies",
+        "rgb(130,0,130)": "Cloud",
+        "rgb(30,60,170)": "Day Sky",
+        "rgb(40,110,30)": "Grassland",
+        "rgb(230,130,0)": "Moon",
+        "rgb(110,20,30)": "Night Sky",
+        "rgb(140,50,30)": "Rocky Mountain",
+        "rgb(0,50,0)": "Green Mountain",
+        "rgb(160,100,200)": "Snow Mountain",
+        "rgb(250,30,30)": "Volcano",
+        "rgb(70,180,40)": "Green Tree",
+        "rgb(100,100,100)": "Dead Tree",
+        "rgb(0,240,0)": "Green Forest",
+        "rgb(170,80,50)": "Desert",
+        "rgb(0,150,120)": "Snowland",
+        "rgb(180,120,60)": "Muddy Water",
+        "rgb(240,50,0)": "Lava"
+        }
+
+
+        # Empty list to store labels
+        input = []
+
+        # Loop through the list of RGB values
+        for rgb in rgb_values:
+            # Add spaces around the commas in the RGB value
+            rgb_str = str(rgb)
+            
+            # Get the label corresponding to the RGB value from the dictionary
+            label = rgb_to_label.get(rgb_str)
+            
+            # Append the label to the list of labels
+            input.append(label)
+
+        # dummy_labels contain all 18 labels
+        dummy_labels = ['Barren Land', 'Clean Water Bodies', 'Cloud', 'Dead Tree', 'Day Sky',  'Desert', 'Grassland', 'Green Forest', 'Green Mountain', 'Green Tree', 'Lava', 'Moon', 'Muddy Water', 'Night Sky', 'Rocky Mountain','Snow Land', 'Snow Mountain', 'Volcano']
+
+        # Initialize an empty array to store the binary values
+        true_labels = np.zeros(len(dummy_labels))
+
+        # Iterate through each label in dummy_labels
+        for i, label in enumerate(dummy_labels):
+            # Check if the label is present in input_labels
+            if label in input:
+                # Set the corresponding index in true_labels to 1
+                true_labels[i] = 1
+         # Print the result
+        
+
+        # Reshape the array
+        reshaped_true_labels = true_labels.reshape((1, 1, len(true_labels)))
+        
+        predictions_recommendation = recommendation_model.predict([reshaped_true_labels, reshaped_true_labels])
+        threshold = 0.1
+        recommendations = []
+        # Apply threshold to predictions
+        binary_predictions = (predictions_recommendation >= threshold).astype(int)
+       
+        recommendations.append(binary_predictions)
+        recommendations = np.array(recommendations)
+        recommendations = recommendations.reshape(len(true_labels))
+
+        recommendation_array =  []
+        
+        
+        # Iterate through each index and label in dummy_labels and recommendations respectively
+        for i, label in enumerate(dummy_labels):
+            # Check if the corresponding value in recommendations is 1 and if the label is not present in input_labels
+            if recommendations[i] == 1 and label not in input:
+                # Display the label name
+                recommendation_array.append(label)
+        
+                
+
+
+        
+        
 
         # Convert the data URL to a NumPy array
         # decode image data from frontend to use pillow
@@ -80,9 +162,9 @@ def process_image():
 
         # Convert NumPy array to PIL Image
         processed_image_pil = Image.fromarray((processed_image * 255).astype(np.uint8))
-        print(processed_image_pil)
+        
         # processed_image_pil_resized = processed_image_pil.resize(ip_img.size)
-        # print(processed_image_pil_resized)
+      
 
         # Plot and save the generated images
         plt.figure(figsize=(256/72, 256/72), dpi=72)
@@ -95,8 +177,10 @@ def process_image():
         plt.savefig(plot_path, bbox_inches= 0, pad_inches=0)
         plt.close()
 
+
+
         # Send the path of the saved image back to the frontend
-        return jsonify({'processedImage': plot_path})
+        return jsonify({'processedImage': plot_path , "serverArray": recommendation_array})
     except Exception as e:
         return jsonify({'error': str(e)})
         
@@ -105,6 +189,8 @@ def serve_plot(filename):
     image_path = os.path.join(app.root_path, 'results', filename)
     return send_file(image_path, mimetype='image/png')
 
+
+# Dictionary with mappings from RGB values to labels
 
 
 
@@ -168,7 +254,7 @@ def super_resolution():
         model.load_state_dict(torch.load(model_path), strict=True)
         model.eval()
         model = model.to(device)
-        print('Model path {:s}. \nTesting...'.format(model_path))
+        
         image_paths = glob.glob(test_img_folder)
         latest_image_path = max(image_paths, key=lambda x: int(''.join(filter(str.isdigit, osp.splitext(osp.basename(x))[0]))))
         base = osp.splitext(osp.basename(latest_image_path))[0]

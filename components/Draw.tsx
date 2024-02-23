@@ -15,7 +15,8 @@ import HMobiledataIcon from "@mui/icons-material/HMobiledata";
 const Draw = () => {
   const canvas = useRef<ReactSketchCanvasRef>(null);
   const [processedImage, setProcessedImage] = useState<string | null>(null);
-  const [strokeColor, setStrokeColor] = useState<any>("rgb(0,0,0)");
+  const [recommend, setRecommend] = useState([]);
+  const [strokeColor, setStrokeColor] = useState<any>("rgb(30,30,30)");
   const [strokeWidth, setStrokeWidth] = useState(5);
   const [eraseMode, setEraseMode] = useState(false);
   const [eraserWidth, setEraserWidth] = useState(5);
@@ -116,6 +117,8 @@ const Draw = () => {
 
         // Set the processed image in the state
         setProcessedImage(result.processedImage);
+        setRecommend(result?.serverArray);
+
         setSuperRS(false);
         console.log(result.processedImage);
         resolve(result);
@@ -194,20 +197,22 @@ const Draw = () => {
   // }, [processedImage]); // Depend on processedImage
 
   //handle strokeColor
-  const handleStrokeColorChange = (color: string) => {
-    setStrokeColor(color);
+  const handleStrokeColorChange = (color: any) => {
+    const colorString = color.toString();
+    console.log(colorString);
+    setStrokeColor(colorString);
   };
   //provide Color options to user
   const colorOptions = [
     { value: "rgb(30,30,30)", label: "Barren Land" },
-    { value: "rgb(0, 10,250)", label: "Clean Water Bodies" },
+    { value: "rgb(0,10,250)", label: "Clean Water Bodies" },
     { value: "rgb(130,0,130)", label: "Cloud" },
     { value: "rgb(30,60,170)", label: "Day Sky" },
     { value: "rgb(40,110,30)", label: "Grassland" },
     { value: "rgb(230,130,0)", label: "Moon" },
     { value: "rgb(110,20,30)", label: "Night Sky" },
     { value: "rgb(140,50,30)", label: "Rocky Mountain" },
-    { value: "rgb(0,50,0))", label: "Green Mountain" },
+    { value: "rgb(0,50,0)", label: "Green Mountain" },
     { value: "rgb(160,100,200)", label: "Snow Mountain" },
     { value: "rgb(250,30,30)", label: "Volcano" },
     { value: "rgb(70,180,40)", label: "Green Tree" },
@@ -365,6 +370,28 @@ const Draw = () => {
               >
                 SR
               </button>
+              <div className="flex items-center flex-wrap gap-2 text-xs">
+                Recommendations:
+                {recommend.slice(0, 4).map((item, index) => {
+                  return (
+                    <div
+                      key={index}
+                      className="p-2 rounded-lg bg-white cursor-pointer"
+                      onClick={() => {
+                        {
+                          colorOptions.map((color) => {
+                            if (color.label === item) {
+                              setStrokeColor(color.value);
+                            }
+                          });
+                        }
+                      }}
+                    >
+                      {item}
+                    </div>
+                  );
+                })}
+              </div>
             </>
           )}
           {/* Edit mode on */}
