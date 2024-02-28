@@ -99,29 +99,32 @@ const Draw = () => {
       };
 
       console.log("Data to be sent to the server:", data);
+      if (data?.strokeColors.length > 0) {
+        // Make a POST request to the backend API
+        const response = await fetch("http://127.0.0.1:5000/process_image", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(data),
+        });
 
-      // Make a POST request to the backend API
-      const response = await fetch("http://127.0.0.1:5000/process_image", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(data),
-      });
+        if (response.ok) {
+          // Handle the response from the server
+          const result = await response.json();
+          console.log("Server Resonse:", result);
+          console.log("Processed Image:", result.processedImage);
 
-      if (response.ok) {
-        // Handle the response from the server
-        const result = await response.json();
-        console.log("Server Resonse:", result);
-        console.log("Processed Image:", result.processedImage);
+          // Set the processed image in the state
+          setProcessedImage(result.processedImage);
+          setRecommend(result?.serverArray);
 
-        // Set the processed image in the state
-        setProcessedImage(result.processedImage);
-        setRecommend(result?.serverArray);
-
-        setSuperRS(false);
-        console.log(result.processedImage);
-        resolve(result);
+          setSuperRS(false);
+          console.log(result.processedImage);
+          resolve(result);
+        } else {
+          reject();
+        }
       } else {
         reject();
       }
@@ -243,7 +246,7 @@ const Draw = () => {
   return (
     <>
       <div className="flex flex-col h-full w-full overflow-hidden font-semibold bg-gray-300">
-        <div className=" flex flex-row w-full items-center  justify-start mx-[50px] gap-x-12 my-[10px]  text-[10px] ">
+        <div className=" flex flex-row w-full items-center  justify-start mx-[50px] gap-x-10 my-[10px]  text-[10px] ">
           {!edit && (
             <>
               <div className="flex flex-row items-center">
@@ -370,7 +373,7 @@ const Draw = () => {
               >
                 SR
               </button>
-              <div className="flex items-center flex-wrap gap-2 text-xs">
+              <div className="flex items-center  gap-2 text-xs">
                 Recommendations:
                 {recommend.slice(0, 4).map((item, index) => {
                   return (
