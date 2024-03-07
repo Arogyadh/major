@@ -123,9 +123,11 @@ const Draw = () => {
           console.log(result.processedImage);
           resolve(result);
         } else {
+          setProcessedImage(null);
           reject();
         }
       } else {
+        setProcessedImage(null);
         reject();
       }
     });
