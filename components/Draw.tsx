@@ -22,7 +22,6 @@ const Draw = () => {
   const [eraserWidth, setEraserWidth] = useState(5);
   const [edit, setEdit] = useState(false);
   const [superRS, setSuperRS] = useState(false);
-  const [fullScreen, setFullScreen] = useState(false);
   const buttonRef = useRef<HTMLButtonElement | null>(null);
 
   // Filters
@@ -117,6 +116,7 @@ const Draw = () => {
 
           // Set the processed image in the state
           setProcessedImage(result.processedImage);
+          console.log(result.serverArray);
           setRecommend(result?.serverArray);
 
           setSuperRS(false);
@@ -310,7 +310,14 @@ const Draw = () => {
                 )}
               </button>
 
-              <button className="flex" onClick={handleResetCanvas}>
+              <button
+                className="flex"
+                onClick={() => {
+                  handleResetCanvas();
+                  resetFilters();
+                  setRecommend([]);
+                }}
+              >
                 Reset Canvas
               </button>
               <button className="flex items-center" onClick={handleUndo}>
